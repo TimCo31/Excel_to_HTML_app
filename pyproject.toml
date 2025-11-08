@@ -5,7 +5,9 @@ description = ""
 authors = [
     {name = "Timothee Corlay",email = "timothee.corlay@grenoble-inp.fr"}
 ]
-package-mode = false  
+packages = [
+    { include = "excel_to_html_app" }
+]
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
