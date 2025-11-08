@@ -5,6 +5,7 @@ description = ""
 authors = [
     {name = "Timothee Corlay",email = "timothee.corlay@grenoble-inp.fr"}
 ]
+package-mode = false  
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
