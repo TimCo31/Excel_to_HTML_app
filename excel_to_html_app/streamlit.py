@@ -4,6 +4,7 @@ import os
 from collections import namedtuple
 import zipfile
 import io
+import shutil
 
 def recuperer_nombre_options_et_attributs(df):
     colonnes_options = [col for col in df.columns if col.startswith("option")]
@@ -13,12 +14,20 @@ def recuperer_nombre_options_et_attributs(df):
     return Resultat(options, attributs)
 
 def generer_pages_html(df):
+    if "Choice" not in df.columns:
+        raise ValueError("La colonne 'Choice' est manquante dans le fichier.")
+    
     resultat = recuperer_nombre_options_et_attributs(df)
     options = resultat.options
     attributs = resultat.attributs
 
     if not os.path.exists("situations_html"):
         os.makedirs("situations_html")
+
+    # Copier les images dans le dossier situations_html
+    for option in options:
+        if os.path.exists(f"temp/{option}.png"):
+            shutil.copy(f"temp/{option}.png", f"situations_html/{option}.png")
 
     template_html = """
     <!DOCTYPE html>
@@ -69,7 +78,13 @@ def generer_pages_html(df):
         choix_row += "</tr>"
         table_rows.append(choix_row)
 
-        headers = "<th>Attribut</th>" + "".join([f"<th>{option}</th>" for option in options])
+        headers = "<th>Attribut</th>"
+        for option in options:
+            img_tag = ""
+            if os.path.exists(f"situations_html/{option}.png"):
+                img_tag = f'<img src="{option}.png" alt="{option}" style="max-width: 100px; max-height: 100px; display: block; margin: 0 auto 5px;">'
+            headers += f"<th>{img_tag}<br>{option}</th>"
+
         table_html = f"""
         <table>
             <thead>
@@ -80,6 +95,9 @@ def generer_pages_html(df):
             </tbody>
         </table>
         """
+
+
+
 
         with open(f"situations_html/situation_{choice}.html", "w") as file:
             file.write(template_html.format(choice=choice, table_html=table_html))
@@ -106,6 +124,20 @@ def main():
 
         st.write("Aperçu des données :")
         st.dataframe(df)
+
+        resultat = recuperer_nombre_options_et_attributs(df)
+        options = resultat.options
+        images = {}
+        for option in options:
+            st.subheader(f"Image pour {option}")
+            img_file = st.file_uploader(f"Déposez une image pour {option}", type=["png", "jpg", "jpeg"], key=f"img_{option}")
+            if img_file is not None:
+                img_path = os.path.join("temp", f"{option}.png")
+                if not os.path.exists("temp"):
+                    os.makedirs("temp")
+                with open(img_path, "wb") as f:
+                    f.write(img_file.getbuffer())
+                images[option] = img_path
 
         if st.button("Générer les pages HTML"):
             with st.spinner("Génération en cours..."):
