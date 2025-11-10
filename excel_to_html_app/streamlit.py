@@ -28,7 +28,6 @@ def generer_pages_html(df, images):
     for option in options:
         if option in images and os.path.exists(images[option]):
             shutil.copy(images[option], f"situations_html/{option}.png")
-            st.write(f"Image pour {option} copiée dans situations_html")
 
     template_html = """
     <!DOCTYPE html>
@@ -90,7 +89,7 @@ def generer_pages_html(df, images):
             img_tag = ""
             if os.path.exists(f"situations_html/{option}.png"):
                 img_tag = f'<img src="{option}.png" alt="{option}" style="max-width: 100px; max-height: 100px; display: block; margin: 0 auto 5px;">'
-            headers += f"<th>{img_tag}<br>{option}</th>"
+            headers += f"<th>{img_tag}</th>"
 
         table_html = f"""
         <table>
@@ -127,6 +126,46 @@ def generer_pages_html(df, images):
 
 def main():
     st.title("Générateur de Pages HTML pour les Questionnaires")
+    st.markdown(
+        """
+        **Instructions concernant le format du fichier Excel/CSV :**
+        <ul style="margin-left: 20px;">
+            <li>La première colonne doit être nommée <strong>"Choice"</strong>.</li>
+            <li>Les autres colonnes doivent être de la forme **"optionX.Attribut"**, où :
+                <ul style="margin-left: 20px;">
+                    <li><strong>optionX</strong> : Identifie une option (par exemple, option1, option2, etc.).</li>
+                    <li><strong>Attribut</strong> : Identifie un attribut de cette option (par exemple, prix, certification, etc.).</li>
+                </ul>
+            </li>
+        </ul>
+
+        **Exemple de format :**
+        <table style="margin-left: 20px;">
+            <tr>
+                <th>Choice</th>
+                <th>option1.prix</th>
+                <th>option1.certification</th>
+                <th>option2.prix</th>
+                <th>option2.certification</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>10</td>
+                <td>2</td>
+                <td>15</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>20</td>
+                <td>3</td>            
+                <td>25</td>
+                <td>2</td>
+            </tr>
+        </table>
+        """,
+        unsafe_allow_html=True
+    )
 
     uploaded_file = st.file_uploader("Déposez votre fichier Excel ou CSV ici :", type=["xlsx", "csv"])
 
