@@ -204,6 +204,18 @@ def main():
                     file_name=zip_filename,
                     mime="application/zip"
                 )
+        except Exception as e:
+            st.error(f"Erreur: {e}")
+        finally:
+        if os.path.exists("situations_html"):
+            shutil.rmtree("situations_html")
+        if os.path.exists("images"):
+            shutil.rmtree("images")
+        if os.path.exists("temp"):
+            shutil.rmtree("temp")
+        if os.path.exists(zip_filename):
+            os.remove(zip_filename)
+
 
 if __name__ == "__main__":
     main()
