@@ -131,7 +131,7 @@ def main():
         **Instructions concernant le format du fichier Excel/CSV :**
         <ul style="margin-left: 20px;">
             <li>La première colonne doit être nommée <strong>"Choice"</strong>.</li>
-            <li>Les autres colonnes doivent être de la forme **"optionX.Attribut"**, où :
+            <li>Les autres colonnes doivent être de la forme <strong>"optionX.Attribut"</strong>, où :
                 <ul style="margin-left: 20px;">
                     <li><strong>optionX</strong> : Identifie une option (par exemple, option1, option2, etc.).</li>
                     <li><strong>Attribut</strong> : Identifie un attribut de cette option (par exemple, prix, certification, etc.).</li>
