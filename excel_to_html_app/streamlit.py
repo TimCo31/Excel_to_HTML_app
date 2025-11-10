@@ -114,7 +114,7 @@ def generer_pages_html(df):
         for root, dirs, files in os.walk("situations_html"):
             for file in files:
                 file_path = os.path.join(root, file)
-                arcname = os.path.relpath(file_path, start = "situations.html")
+                arcname = os.path.relpath(file_path, start = "situations_html")
                 zipf.write(file_path, arcname)
 
     return zip_filename
