@@ -52,6 +52,12 @@ def generer_pages_html(df):
                 transform: scale(1.5);
                 margin: 0 auto;
             }}
+            th img {{
+                max-width: 100px;
+                max-height: 100px;
+                display: block;
+                margin: 0 auto 5px;
+            }}
         </style>
     </head>
     <body>
@@ -107,7 +113,9 @@ def generer_pages_html(df):
     with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk("situations_html"):
             for file in files:
-                zipf.write(os.path.join(root, file), file)
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, start = "situations.html")
+                zipf.write(file_path, arcname)
 
     return zip_filename
 
