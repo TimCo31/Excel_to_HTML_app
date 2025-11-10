@@ -170,51 +170,52 @@ def main():
     uploaded_file = st.file_uploader("Déposez votre fichier Excel ou CSV ici :", type=["xlsx", "csv"])
 
     if uploaded_file is not None:
-        if uploaded_file.name.endswith('.csv'):
-            df = pd.read_csv(uploaded_file)
-        else:
-            df = pd.read_excel(uploaded_file)
+        try:
+            if uploaded_file.name.endswith('.csv'):
+                df = pd.read_csv(uploaded_file)
+            else:
+                df = pd.read_excel(uploaded_file)
 
-        st.write("Aperçu des données :")
-        st.dataframe(df)
+            st.write("Aperçu des données :")
+            st.dataframe(df)
 
-        resultat = recuperer_nombre_options_et_attributs(df)
-        options = resultat.options
-        images = {}
-        for option in options:
-            st.subheader(f"Image pour {option}")
-            img_file = st.file_uploader(f"Déposez une image pour {option}", type=["png", "jpg", "jpeg"], key=f"img_{option}")
-            if img_file is not None:
-                img_path = os.path.join("temp", f"{option}.png")
-                if not os.path.exists("temp"):
-                    os.makedirs("temp")
-                with open(img_path, "wb") as f:
-                    f.write(img_file.getbuffer())
-                images[option] = img_path
+            resultat = recuperer_nombre_options_et_attributs(df)
+            options = resultat.options
+            images = {}
+            for option in options:
+                st.subheader(f"Image pour {option}")
+                img_file = st.file_uploader(f"Déposez une image pour {option}", type=["png", "jpg", "jpeg"], key=f"img_{option}")
+                if img_file is not None:
+                    img_path = os.path.join("temp", f"{option}.png")
+                    if not os.path.exists("temp"):
+                        os.makedirs("temp")
+                    with open(img_path, "wb") as f:
+                        f.write(img_file.getbuffer())
+                    images[option] = img_path
 
-        if st.button("Générer les pages HTML"):
-            with st.spinner("Génération en cours..."):
-                zip_filename = generer_pages_html(df, images)
-            st.success("Génération terminée !")
+            if st.button("Générer les pages HTML"):
+                with st.spinner("Génération en cours..."):
+                    zip_filename = generer_pages_html(df, images)
+                st.success("Génération terminée !")
 
-            with open(zip_filename, "rb") as f:
-                st.download_button(
-                    label="Télécharger les pages HTML",
-                    data=f,
-                    file_name=zip_filename,
-                    mime="application/zip"
-                )
+                with open(zip_filename, "rb") as f:
+                    st.download_button(
+                        label="Télécharger les pages HTML",
+                        data=f,
+                        file_name=zip_filename,
+                        mime="application/zip"
+                    )
         except Exception as e:
             st.error(f"Erreur: {e}")
         finally:
-        if os.path.exists("situations_html"):
-            shutil.rmtree("situations_html")
-        if os.path.exists("images"):
-            shutil.rmtree("images")
-        if os.path.exists("temp"):
-            shutil.rmtree("temp")
-        if os.path.exists(zip_filename):
-            os.remove(zip_filename)
+            if os.path.exists("situations_html"):
+                shutil.rmtree("situations_html")
+            if os.path.exists("images"):
+                shutil.rmtree("images")
+            if os.path.exists("temp"):
+                shutil.rmtree("temp")
+            if 'zip_filename' in locals() and os.path.exists(zip_filename):
+                os.remove(zip_filename)
 
 
 if __name__ == "__main__":
