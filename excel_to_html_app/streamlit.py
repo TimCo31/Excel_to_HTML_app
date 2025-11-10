@@ -13,7 +13,7 @@ def recuperer_nombre_options_et_attributs(df):
     Resultat = namedtuple('Resultat', ['options', 'attributs'])
     return Resultat(options, attributs)
 
-def generer_pages_html(df):
+def generer_pages_html(df, images):
     if "Choice" not in df.columns:
         raise ValueError("La colonne 'Choice' est manquante dans le fichier.")
     
@@ -26,8 +26,9 @@ def generer_pages_html(df):
 
     # Copier les images dans le dossier situations_html
     for option in options:
-        if os.path.exists(f"temp/{option}.png"):
-            shutil.copy(f"temp/{option}.png", f"situations_html/{option}.png")
+        if option in images and os.path.exists(images[option]):
+            shutil.copy(images[option], f"situations_html/{option}.png")
+            st.write(f"Image pour {option} copiée dans situations_html")
 
     template_html = """
     <!DOCTYPE html>
@@ -108,7 +109,7 @@ def generer_pages_html(df):
         with open(f"situations_html/situation_{choice}.html", "w") as file:
             file.write(template_html.format(choice=choice, table_html=table_html))
 
-    # Créer une archive ZIP des fichiers HTML
+    # Créer une archive ZIP des fichiers HTML et des images
     zip_filename = "situations_html.zip"
     with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk("situations_html"):
@@ -116,6 +117,11 @@ def generer_pages_html(df):
                 file_path = os.path.join(root, file)
                 arcname = os.path.relpath(file_path, start = "situations_html")
                 zipf.write(file_path, arcname)
+
+    print("Fichiers dans le ZIP :")
+    with zipfile.ZipFile(zip_filename, 'r') as zipf:
+        for file_info in zipf.infolist():
+            print(file_info.filename)
 
     return zip_filename
 
@@ -149,7 +155,7 @@ def main():
 
         if st.button("Générer les pages HTML"):
             with st.spinner("Génération en cours..."):
-                zip_filename = generer_pages_html(df)
+                zip_filename = generer_pages_html(df, images)
             st.success("Génération terminée !")
 
             with open(zip_filename, "rb") as f:
